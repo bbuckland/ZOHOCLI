@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+require 'net/http'
+require 'uri'
+require 'highline/import'
+require 'json'
+require 'date'
+
+program :version, '0.0.1'
+program :description, 'Interface with ZOHO Invoice'
+
+command :start do |c|
+  c.syntax = 'bucks create [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    puts "Starting timer for Quality Audit Project"
+    # Do something or c.when_called Bucks::Commands::start
+    
+    note = ask "Provide a note for the task: "
+    uri = URI("https://invoice.zoho.com/api/v3/projects/timeentries")
+    date = Time.now.strftime("%Y-%m-%d").to_s
+    date = date.new_offset(0)
+    
+    jsonString = {"project_id" => "540238000000075001", 
+                  "task_id" => "540238000000075003", 
+                  "user_id": "540238000000037001", 
+                  "log_date" => date, 
+                  "log_time" => "04:03", 
+                  "notes" => note, 
+                  "start_timer" => true}
+
+   
+    params = { "authtoken" => "fd22d7f84752ef7cdfaec43fe525a1a3", "organization_id" => "40663832", "JSONString" => jsonString.to_json}
+  
+    res = Net::HTTP.post_form(uri, params)
+    puts res.body if res.is_a?(Net::HTTPSuccess)
+    puts params
+  end
+end
+
